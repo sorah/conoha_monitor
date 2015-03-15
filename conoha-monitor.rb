@@ -6,6 +6,7 @@ require 'json'
 
 target_url = ENV['CONOHA_MONITOR_TARGET'] || 'https://cp.conoha.jp/information.aspx'
 DETAIL_ENDPOINT = ENV['CONOHA_MONITOR_DETAIL_URL'] || 'https://cp.conoha.jp/GetInforMation.aspx?mid=%s'
+PERMALINK = ENV['CONOHA_MONITOR_PERMALINK'] || 'https://cp.conoha.jp/Information.aspx#%s'
 tag_prefix = ENV['CONOHA_MONITOR_TAG_PREFIX'] || 'conoha-monitor'
 interval = (ENV['CONOHA_MONITOR_INTERVAL'] || 180).to_i
 fluentd_host, fluentd_port = ENV['CONOHA_MONITOR_FLUENTD'] ? ENV['CONOHA_MONITOR_FLUENTD'].split(',', 2) : ['localhost', 24224]
@@ -34,7 +35,7 @@ last = 'sp16586'
 loop do
   begin
     page = Nokogiri::HTML(open(target_url, 'r', 'Cookie' => 'conoha-culture-info=ja', &:read))
-    newslist = page.at('.newsList').search('dt,dd').each_slice(2).map {|(dt,dd)| {id: dd.at('a')['href'][1..-1], kind: dt['class'], at: dt.inner_text, title: dd.inner_text} }
+    newslist = page.at('.newsList').search('dt,dd').each_slice(2).map {|(dt,dd)| id = dd.at('a')['href'][1..-1]; {id: id, kind: dt['class'], at: dt.inner_text, title: dd.inner_text, url: PERMALINK % id} }
 
     latest_news = newslist.first
 
@@ -49,7 +50,11 @@ loop do
 
       newslist[0...last_index].each do |news|
         news.merge!(news_detail(latest_news[:id]))
-        log("news.#{news[:kind]}", news)
+        message = "#{news[:kind]}: #{news[:title]} #{news[:url]}\n\n```\n#{news[:body]}\n```"
+        puts "----"
+        puts message
+        log("news.#{news[:kind]}", news.merge(message: message))
+        puts "----"
       end
     end
 
