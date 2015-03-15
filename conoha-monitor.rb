@@ -9,7 +9,7 @@ DETAIL_ENDPOINT = ENV['CONOHA_MONITOR_DETAIL_URL'] || 'https://cp.conoha.jp/GetI
 PERMALINK = ENV['CONOHA_MONITOR_PERMALINK'] || 'https://cp.conoha.jp/Information.aspx#%s'
 tag_prefix = ENV['CONOHA_MONITOR_TAG_PREFIX'] || 'conoha-monitor'
 interval = (ENV['CONOHA_MONITOR_INTERVAL'] || 180).to_i
-fluentd_host, fluentd_port = ENV['CONOHA_MONITOR_FLUENTD'] ? ENV['CONOHA_MONITOR_FLUENTD'].split(',', 2) : ['localhost', 24224]
+fluentd_host, fluentd_port = ENV['CONOHA_MONITOR_FLUENTD'] ? ENV['CONOHA_MONITOR_FLUENTD'].split(':', 2) : ['localhost', 24224]
 
 @logger = Fluent::Logger::FluentLogger.new(tag_prefix, host: fluentd_host, port: fluentd_port.to_i)
 def log(*args)
