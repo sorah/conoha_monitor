@@ -31,7 +31,7 @@ def news_detail(id)
   }
 end
 
-last = 'sp16586'
+last = nil
 loop do
   begin
     page = Nokogiri::HTML(open(target_url, 'r', 'Cookie' => 'conoha-culture-info=ja', &:read))
@@ -40,8 +40,12 @@ loop do
     latest_news = newslist.first
 
     unless last
-      last = latest_news[:id]
-      puts "Watching for news, after #{latest_news.inspect}"
+      if ENV['CONOHA_MONITOR_DEBUG'] == '1'
+        last = newslist[1][:id]
+      else
+        last = latest_news[:id]
+        puts "Watching for news, after #{latest_news.inspect}"
+      end
     end
 
     if last != latest_news[:id]
