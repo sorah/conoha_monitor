@@ -7,4 +7,4 @@ RUN bundle install --jobs 4 --path /app/vendor/bundle --deployment --without dev
 
 ADD *.rb /app/
 
-CMD /usr/bin/ruby /app/conoha-monitor.rb
+CMD bundle exec ruby /app/conoha-monitor.rb
