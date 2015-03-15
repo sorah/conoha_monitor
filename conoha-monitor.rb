@@ -26,7 +26,7 @@ def news_detail(id)
     kind: news['categoryCssClass'],
     title: news['subject'],
     at: Time.parse(news['date']),
-    body: news['body'].gsub(/\r\n/,'\n'),
+    body: news['body'].gsub(/\r\n/,"\n"),
   }
 end
 
