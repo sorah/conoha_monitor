@@ -5,10 +5,15 @@ machine:
 dependencies:
   cache_directories:
     - bin
+    - ~/docker
   pre:
     - if [ ! -d bin ]; then mkdir bin; fi
     - if [ ! -x bin/git-set-mtime ]; then curl -o bin/git-set-mtime https://drone.io/github.com/rosylilly/git-set-mtime/files/artifacts/bin/linux_amd64/git-set-mtime && chmod +x bin/git-set-mtime; fi
     - docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}" -e "${DOCKER_EMAIL}" https://quay.io
+    - mkdir -p ~/docker
+    - if [[ -e ~/docker/cache.tar ]]; then docker load -i ~/docker/cache.tar; fi
+    - docker pull quay.io/sorah/conoha_monitor:latest
+    - if [[ ! -e ~/docker/cache.tar ]]; then docker save quay.io/sorah/conoha_monitor:latest > ~/docker/cache.tar; fi.
 
 test:
   override:
