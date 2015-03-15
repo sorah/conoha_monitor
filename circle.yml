@@ -14,6 +14,7 @@ dependencies:
     - if [[ -e ~/docker/cache.tar ]]; then docker load -i ~/docker/cache.tar; fi
     - docker pull quay.io/sorah/rbenv:2.2
     - BASE_ID="$(docker inspect -f '{{.Id}}' quay.io/sorah/rbenv:2.2)"; if [[ "_${BASE_ID}" != "_$(cat ~/docker/cache.id)" ]]; then docker save quay.io/sorah/rbenv:2.2 > ~/docker/cache.tar && echo "${BASE_ID}" > ~/docker/cache.id; fi
+    - docker pull quay.io/sorah/conoha_monitor:latest
 
 test:
   override:
